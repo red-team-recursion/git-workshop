@@ -1,7 +1,7 @@
 ---
 name: 🔧 Feature
 about: File a feature/issue 新規の機能・タスクの割当
-title: '[Feature] <title>'
+title: '[Feat] <title>'
 labels: Enhancement
 assignees: ''
 
