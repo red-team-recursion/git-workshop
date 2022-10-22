@@ -1,6 +1,6 @@
 ---
 name: 🐞 Bug
-about: File a bug/issue
+about: File a bug/issue 不具合・バグの対応割当
 title: '[Bug] <title>'
 labels: Bug
 assignees: ''
