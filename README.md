@@ -1,1 +1,1 @@
-# git-workshop
+# tic-tac-toe
