@@ -8,8 +8,8 @@ assignees: ""
 
 ### 概要
 
--   内容のサマリ
--   関連 Issue 番号/関連 Branch リンク
+- 内容のサマリ
+- 関連Issue番号/関連Branchリンク
 
 ### 内容
 
