@@ -1,4 +1,4 @@
-const main = () => {
-	const target = document.getElementById("target");
-};
-main();
+"use strict";
+
+const board = document.getElementById("board");
+const cells = document.querySelectorAll(".board-cell");
