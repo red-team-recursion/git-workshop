@@ -6,8 +6,8 @@ const oPlayer = (playerTurnText.textContent = 'O turn')
 const gameObject = {
   oTurn: true,
   turnCount: 0,
-  oState: [],
-  xState: [],
+  oClickedState: [],
+  xClickedState: [],
   WINNING_CONDITION: [
     // 列
     [0, 1, 2],
@@ -24,18 +24,26 @@ const gameObject = {
 }
 
 // 引数(下記では'turnCount'を使用)の剰余によって、
-// player表示を切り替える
+// player表示を切り替える関数
 function switchPlayer(e) {
   e % 2 === 0
     ? (document.querySelector('#player-turn').textContent = 'X turn')
     : (document.querySelector('#player-turn').textContent = 'O turn')
 }
 
-// 真偽値により、playerturnを判定する
+// 真偽値により、playerのturnを判定する関数
 function switchTurn() {
   gameObject.oTurn = !gameObject.oTurn
 }
 
+// クリック時のイベント処理関数
+// function clickEventHandler() {
+//   document.addEventListener('click', (e) => {})
+// }
+
+// 勝利判定の関数
+// どちらかの勝利が判定された時点で、全てのboardcellをクリック済にし
+// 勝利時のテキストを真偽値を用いて表示する
 function displayWinMessage(oInfo, xInfo) {
   if (oInfo || xInfo) {
     document
@@ -53,20 +61,18 @@ document.addEventListener('click', (e) => {
   const target = e.target
   // ↓はHTMLのboard-cellクラス名の有無を確認
   // クリック時にクラスが有れば'true'、無ければ'false'を返す
-  const boardCell = target.classList.contains('board-cell')
-  const click = target.classList.contains('clicked')
+  const isBoardCell = target.classList.contains('board-cell')
+  const isClick = target.classList.contains('clicked')
   const boardCellIndex = target.dataset.index
-  const addClicked = target.classList.add('clicked')
-  const addState = target.classList.add(gameObject.oTurn ? 'o' : 'x')
 
-  if (boardCell && !click) {
+  if (isBoardCell && !isClick) {
     //両playerへの配列格納時に、HTMLのindexnumberを数値に変換する
     gameObject.oTurn
-      ? gameObject.oState.push(Number(boardCellIndex))
-      : gameObject.xState.push(Number(boardCellIndex))
+      ? gameObject.oClickedState.push(parseInt(boardCellIndex))
+      : gameObject.xClickedState.push(parseInt(boardCellIndex))
 
-    addState
-    addClicked
+    target.classList.add('clicked')
+    target.classList.add(gameObject.oTurn ? 'o' : 'x')
     switchTurn()
     switchPlayer(gameObject.turnCount)
     // クリックしたらカウントを1ずつ増加
@@ -82,16 +88,14 @@ document.addEventListener('click', (e) => {
     gameObject.WINNING_CONDITION.forEach((WINNING_CONDITION) => {
       // everyメソッドは、列内のすべての要素が指定された関数で
       // 実装されたテストに合格するかどうかを確認する
-      const winSenkou = WINNING_CONDITION.every((state) =>
-        gameObject.oState.includes(state)
+      const winO = WINNING_CONDITION.every((state) =>
+        gameObject.oClickedState.includes(state)
       )
-      const winKoukou = WINNING_CONDITION.every((state) =>
-        gameObject.xState.includes(state)
+      const winX = WINNING_CONDITION.every((state) =>
+        gameObject.xClickedState.includes(state)
       )
 
-      // どちらかの勝利が判定された時点で、全てのboardcellをクリック済にし
-      // 勝利時のテキストを真偽値を用いて表示する
-      displayWinMessage(winSenkou, winKoukou)
+      displayWinMessage(winO, winX)
     })
   }
 })
