@@ -1,10 +1,10 @@
-'use strict'
+"use strict"
 
-const boardElement = document.getElementById('board')
-const boardCellElements = boardElement.querySelectorAll('.board-cell')
-const playerTurnElement = document.getElementById('player-turn')
-const finishElement = document.getElementById('finish')
-const finishTextElement = document.getElementById('finish-text')
+const boardElement = document.getElementById("board")
+const boardCellElements = boardElement.querySelectorAll(".board-cell")
+const playerTurnElement = document.getElementById("player-turn")
+const finishElement = document.getElementById("finish")
+const finishTextElement = document.getElementById("finish-text")
 
 const gameObject = {
   oTurn: true,
@@ -29,8 +29,8 @@ const gameObject = {
 /*
  * ロード時に最初のプレイヤー名を表示
  */
-window.addEventListener('DOMContentLoaded', () => {
-  playerTurnElement.textContent = 'O turn'
+window.addEventListener("DOMContentLoaded", () => {
+  playerTurnElement.textContent = "O turn"
 })
 
 /*
@@ -41,7 +41,7 @@ const selectCell = (target, i) => {
     ? gameObject.oClickedState.push(parseInt(i))
     : gameObject.xClickedState.push(parseInt(i))
 
-  target.classList.add('clicked', gameObject.oTurn ? 'o' : 'x')
+  target.classList.add("clicked", gameObject.oTurn ? "o" : "x")
 }
 
 /*
@@ -50,7 +50,7 @@ const selectCell = (target, i) => {
 const changeTurn = () => {
   gameObject.oTurn = !gameObject.oTurn
   playerTurnElement.textContent =
-    gameObject.turnCount % 2 === 0 ? 'X turn' : 'O turn'
+    gameObject.turnCount % 2 === 0 ? "X turn" : "O turn"
   gameObject.turnCount++
 }
 
@@ -59,9 +59,9 @@ const changeTurn = () => {
  */
 const judge = () => {
   // 全ての目が埋まった場合、引き分けと表示する
-  if (!boardElement.querySelectorAll('.board-cell:not(.clicked)').length) {
-    finishElement.classList.add('visible')
-    finishTextElement.textContent = '引き分け'
+  if (!boardElement.querySelectorAll(".board-cell:not(.clicked)").length) {
+    finishElement.classList.add("visible")
+    finishTextElement.textContent = "引き分け"
   }
   // 勝敗判定
   gameObject.WinningConditions.forEach((WinningConditions) => {
@@ -75,10 +75,10 @@ const judge = () => {
     )
     if (isWinO || isWinX) {
       boardCellElements.forEach((boardCell) =>
-        boardCell.classList.add('clicked')
+        boardCell.classList.add("clicked")
       )
-      finishElement.classList.add('visible')
-      finishTextElement.textContent = isWinO ? 'Oの勝利' : 'Xの勝利'
+      finishElement.classList.add("visible")
+      finishTextElement.textContent = isWinO ? "Oの勝利" : "Xの勝利"
     }
   })
 }
@@ -87,10 +87,23 @@ const judge = () => {
  * セルクリック時のイベント処理
  */
 boardCellElements.forEach((cell) => {
-  cell.addEventListener('click', (e) => {
+  const index = cell.getAttribute("data-index")
+  const clickedCells = [
+    ...gameObject.oClickedState,
+    ...gameObject.xClickedState,
+  ]
+  const clicked = clickedCells.includes(parseInt(index))
+  // cell.addEventListener("mouseover", () => {
+  //   cell.classList.add(gameObject.oTurn ? "o" : "x")
+  // })
+  // cell.addEventListener("mouseleave", () => {
+  //   cell.classList.remove(gameObject.oTurn ? "o" : "x")
+  // })
+  cell.addEventListener("click", (e) => {
     const target = e.target
-    const isClick = target.classList.contains('clicked')
+    const isClick = target.classList.contains("clicked")
     const boardCellIndex = target.dataset.index
+    console.log(index, clicked)
 
     if (!isClick) {
       selectCell(target, boardCellIndex)

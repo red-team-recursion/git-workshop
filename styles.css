@@ -37,34 +37,47 @@ body {
   height: 300px;
   display: flex;
   flex-wrap: wrap;
+  border: none;
 }
 
 /*cell*/
 .board-cell {
   width: calc(100% / 3);
   height: calc(100% / 3);
-  border: solid 0.5px #999;
+  border: solid 2px #000;
   cursor: pointer;
   font-size: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.board-cell:nth-child(3n + 1) {
+  border-left: none;
+}
+.board-cell:nth-child(3n + 3) {
+  border-right: none;
+}
+.board-cell:nth-child(-n + 3) {
+  border-top: none;
+}
+.board-cell:nth-child(n + 7):nth-child(-n + 9) {
+  border-bottom: none;
+}
 
 .board-cell:hover {
-  background-color: #827f7f;
+  background-color: #d6d6d6;
   opacity: 0.5;
   /* cursor: pointer; */
 }
 
 /* クリック後に✖️印を追加 */
 .x::after {
-  content: 'X';
+  content: "X";
 }
 
 /* クリック後に◯印を追加 */
 .o::after {
-  content: 'O';
+  content: "O";
 }
 
 .clicked {
@@ -95,9 +108,4 @@ body {
   width: calc(100% / 3);
   height: calc(100% / 3);
   border: solid 0.5px #999;
-}
-.board-cell:hover {
-  background-color: #827f7f;
-  opacity: 0.5;
-  cursor: pointer;
 }
