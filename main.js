@@ -1,14 +1,17 @@
 'use strict'
 
-const playerTurnText = document.getElementById('player-turn')
-const oPlayer = (playerTurnText.textContent = 'O turn')
+const boardElement = document.getElementById('board')
+const boardCellElements = boardElement.querySelectorAll('.board-cell')
+const playerTurnElement = document.getElementById('player-turn')
+const finishElement = document.getElementById('finish')
+const finishTextElement = document.getElementById('finish-text')
 
 const gameObject = {
   oTurn: true,
   turnCount: 0,
   oClickedState: [],
   xClickedState: [],
-  WINNING_CONDITION: [
+  WinningConditions: [
     // 列
     [0, 1, 2],
     [3, 4, 5],
@@ -23,79 +26,76 @@ const gameObject = {
   ],
 }
 
-// 引数(下記では'turnCount'を使用)の剰余によって、
-// player表示を切り替える関数
-function switchPlayer(e) {
-  e % 2 === 0
-    ? (document.querySelector('#player-turn').textContent = 'X turn')
-    : (document.querySelector('#player-turn').textContent = 'O turn')
+/*
+ * ロード時に最初のプレイヤー名を表示
+ */
+window.addEventListener('DOMContentLoaded', () => {
+  playerTurnElement.textContent = 'O turn'
+})
+
+/*
+ * 指定したセルを更新する
+ */
+const selectCell = (target, i) => {
+  gameObject.oTurn
+    ? gameObject.oClickedState.push(parseInt(i))
+    : gameObject.xClickedState.push(parseInt(i))
+
+  target.classList.add('clicked', gameObject.oTurn ? 'o' : 'x')
 }
 
-// 真偽値により、playerのturnを判定する関数
-function switchTurn() {
+/*
+ * ターンとプレイヤー名の切り替え
+ */
+const changeTurn = () => {
   gameObject.oTurn = !gameObject.oTurn
+  playerTurnElement.textContent =
+    gameObject.turnCount % 2 === 0 ? 'X turn' : 'O turn'
+  gameObject.turnCount++
 }
 
-// クリック時のイベント処理関数
-// function clickEventHandler() {
-//   document.addEventListener('click', (e) => {})
-// }
-
-// 勝利判定の関数
-// どちらかの勝利が判定された時点で、全てのboardcellをクリック済にし
-// 勝利時のテキストを真偽値を用いて表示する
-function displayWinMessage(oInfo, xInfo) {
-  if (oInfo || xInfo) {
-    document
-      .querySelectorAll('.board-cell')
-      .forEach((boardCell) => boardCell.classList.add('clicked'))
-    document.querySelector('.finish').classList.add('visible')
-    document.querySelector('.finish-text').textContent = oInfo
-      ? 'Oの勝利'
-      : 'Xの勝利'
+/*
+ * 勝敗・引き分け判定及び結果の表示
+ */
+const judge = () => {
+  // 全ての目が埋まった場合、引き分けと表示する
+  if (!boardElement.querySelectorAll('.board-cell:not(.clicked)').length) {
+    finishElement.classList.add('visible')
+    finishTextElement.textContent = '引き分け'
   }
-}
-
-// クリック時のイベント処理
-document.addEventListener('click', (e) => {
-  const target = e.target
-  // ↓はHTMLのboard-cellクラス名の有無を確認
-  // クリック時にクラスが有れば'true'、無ければ'false'を返す
-  const isBoardCell = target.classList.contains('board-cell')
-  const isClick = target.classList.contains('clicked')
-  const boardCellIndex = target.dataset.index
-
-  if (isBoardCell && !isClick) {
-    //両playerへの配列格納時に、HTMLのindexnumberを数値に変換する
-    gameObject.oTurn
-      ? gameObject.oClickedState.push(parseInt(boardCellIndex))
-      : gameObject.xClickedState.push(parseInt(boardCellIndex))
-
-    target.classList.add('clicked')
-    target.classList.add(gameObject.oTurn ? 'o' : 'x')
-    switchTurn()
-    switchPlayer(gameObject.turnCount)
-    // クリックしたらカウントを1ずつ増加
-    gameObject.turnCount++
-
-    // 全ての目が埋まった場合、引き分けと表示する処理
-    if (!document.querySelectorAll('.board-cell:not(.clicked)').length) {
-      document.querySelector('.finish').classList.add('visible')
-      document.querySelector('.finish-text').textContent = '引き分け'
+  // 勝敗判定
+  gameObject.WinningConditions.forEach((WinningConditions) => {
+    // everyメソッドは、列内のすべての要素が指定された関数で
+    // 実装されたテストに合格するかどうかを確認する
+    const isWinO = WinningConditions.every((state) =>
+      gameObject.oClickedState.includes(state)
+    )
+    const isWinX = WinningConditions.every((state) =>
+      gameObject.xClickedState.includes(state)
+    )
+    if (isWinO || isWinX) {
+      boardCellElements.forEach((boardCell) =>
+        boardCell.classList.add('clicked')
+      )
+      finishElement.classList.add('visible')
+      finishTextElement.textContent = isWinO ? 'Oの勝利' : 'Xの勝利'
     }
+  })
+}
 
-    // 勝利判定の処理
-    gameObject.WINNING_CONDITION.forEach((WINNING_CONDITION) => {
-      // everyメソッドは、列内のすべての要素が指定された関数で
-      // 実装されたテストに合格するかどうかを確認する
-      const winO = WINNING_CONDITION.every((state) =>
-        gameObject.oClickedState.includes(state)
-      )
-      const winX = WINNING_CONDITION.every((state) =>
-        gameObject.xClickedState.includes(state)
-      )
+/*
+ * セルクリック時のイベント処理
+ */
+boardCellElements.forEach((cell) => {
+  cell.addEventListener('click', (e) => {
+    const target = e.target
+    const isClick = target.classList.contains('clicked')
+    const boardCellIndex = target.dataset.index
 
-      displayWinMessage(winO, winX)
-    })
-  }
+    if (!isClick) {
+      selectCell(target, boardCellIndex)
+      changeTurn()
+      judge()
+    }
+  })
 })
