@@ -44,6 +44,23 @@ const selectCell = (target, i) => {
   target.classList.add("clicked", gameObject.oTurn ? "o" : "x")
 }
 
+const hoverCell = (cell, clicked) => {
+  const add = (cell) => {
+    return cell.classList.add(gameObject.oTurn ? "o" : "x")
+  }
+  const remove = (cell) => {
+    return cell.classList.remove(gameObject.oTurn ? "o" : "x")
+  }
+  //ちょっとうまくいってない
+  if (!clicked) {
+    cell.addEventListener("mouseover", () => add(cell), false)
+    cell.addEventListener("mouseleave", () => remove(cell), false)
+  } else {
+    cell.removeEventListener("mouseover", add(), false)
+    cell.removeEventListener("mouseleave", remove(), false)
+  }
+}
+
 /*
  * ターンとプレイヤー名の切り替え
  */
@@ -87,25 +104,16 @@ const judge = () => {
  * セルクリック時のイベント処理
  */
 boardCellElements.forEach((cell) => {
-  const index = cell.getAttribute("data-index")
-  const clickedCells = [
-    ...gameObject.oClickedState,
-    ...gameObject.xClickedState,
-  ]
-  const clicked = clickedCells.includes(parseInt(index))
-  // cell.addEventListener("mouseover", () => {
-  //   cell.classList.add(gameObject.oTurn ? "o" : "x")
-  // })
-  // cell.addEventListener("mouseleave", () => {
-  //   cell.classList.remove(gameObject.oTurn ? "o" : "x")
-  // })
+  hoverCell(cell, false)
+
   cell.addEventListener("click", (e) => {
     const target = e.target
     const isClick = target.classList.contains("clicked")
     const boardCellIndex = target.dataset.index
-    console.log(index, clicked)
+    console.log(cell, isClick)
 
     if (!isClick) {
+      hoverCell(cell, isClick)
       selectCell(target, boardCellIndex)
       changeTurn()
       judge()
