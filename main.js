@@ -5,6 +5,7 @@ const boardCellElements = boardElement.querySelectorAll(".board-cell")
 const playerTurnElement = document.getElementById("player-turn")
 const finishElement = document.getElementById("finish")
 const finishTextElement = document.getElementById("finish-text")
+const logsElement = document.getElementById("logs")
 
 const gameObject = {
   oTurn: true,
@@ -26,12 +27,71 @@ const gameObject = {
   ],
 }
 
+const gameLogs = new Array()
+
 /*
  * ロード時に最初のプレイヤー名を表示
  */
 window.addEventListener("DOMContentLoaded", () => {
   playerTurnElement.textContent = "O turn"
+  getAllLogs()
 })
+
+/**
+ * log
+ */
+class Log {
+  oState = gameObject.oClickedState
+  xState = gameObject.xClickedState
+  time = this.time()
+  winner
+  constructor(winner) {
+    this.winner = winner
+  }
+  time() {
+    const dt = new Date()
+    return `${dt.getFullYear()}.${
+      dt.getMonth() + 1
+    }.${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:${dt.getSeconds()}`
+  }
+}
+const saveResult = (winner) => {
+  gameLogs.unshift(new Log(winner))
+  if (gameLogs.length > 5) {
+    gameLogs.pop()
+  }
+  console.log(gameLogs)
+  localStorage.setItem("logs", JSON.stringify(gameLogs))
+}
+const setLogs = (index) => {
+  boardCellElements.forEach((boardCell) => {
+    boardCell.classList.remove("o", "x")
+    boardCell.classList.add("clicked")
+
+    const boardCellIndex = Number(boardCell.getAttribute("data-index"))
+    if (gameLogs[index].oState.includes(boardCellIndex)) {
+      boardCell.classList.add("o")
+    }
+    if (gameLogs[index].xState.includes(boardCellIndex)) {
+      boardCell.classList.add("x")
+    }
+  })
+}
+const viewLogs = () => {
+  gameLogs.forEach((log, i) => {
+    const logButton = document.createElement("button")
+    logButton.innerHTML = i + 1
+    logButton.addEventListener("click", () => setLogs(i))
+    logsElement.append(logButton)
+  })
+}
+const getAllLogs = () => {
+  // localStorage.removeItem("logs")
+  const logs = JSON.parse(localStorage.getItem("logs"))
+  if (!logs) return
+  gameLogs.unshift(...logs)
+  viewLogs()
+}
 
 /*
  * 指定したセルを更新する
@@ -44,6 +104,7 @@ const selectCell = (target, i) => {
   target.classList.add("clicked", gameObject.oTurn ? "o" : "x")
 }
 
+//hoverの処理は一旦おいておく..
 const turn = () => {
   return gameObject.oTurn ? "o" : "x"
 }
@@ -97,6 +158,8 @@ const judge = () => {
       boardCellElements.forEach((boardCell) =>
         boardCell.classList.add("clicked")
       )
+      const winner = isWinO ? "O" : "X"
+      saveResult(winner)
       finishElement.classList.add("visible")
       finishTextElement.textContent = isWinO ? "Oの勝利" : "Xの勝利"
     }
@@ -107,7 +170,7 @@ const judge = () => {
  * セルクリック時のイベント処理
  */
 boardCellElements.forEach((cell) => {
-  hoverCell(cell, false)
+  // hoverCell(cell, false)
 
   cell.addEventListener("click", (e) => {
     const target = e.target
@@ -115,7 +178,7 @@ boardCellElements.forEach((cell) => {
     const boardCellIndex = target.dataset.index
 
     if (!isClick) {
-      hoverCell(cell, true)
+      // hoverCell(cell, true)
       selectCell(target, boardCellIndex)
       changeTurn()
       judge()
