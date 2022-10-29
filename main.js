@@ -57,15 +57,26 @@ function startGame(gameMode){
         });
 
     if(gameMode == "no-cpu"){
-        //kannsuu
+        return ;
     }
     else if(gameMode == "cpu-week"){
         gameObject.isPlayerSenkou = mkplayOrDraw();
-        //function
+        
+        //cpuが先行ならばまずcpuを動かす
+        if(!gameObject.isPlayerSenkou){
+            playerTurnElement.textContent ='Cpu is calculationg ......';
+            setTimeout(cpuMove(),2000);
+        }
+        else playerTurnElement.textContent ='Your turn';
     }
+
+        //function
     else if(gameMode == "cpu-strong"){
         gameObject.isPlayerSenkou = mkplayOrDraw();
-        //function
+
+        if(!gameObject.isPlayerSenkou){
+            setTimeout(cpuMove(),2000);
+        }
     }
 }
 
@@ -94,25 +105,24 @@ const selectCell = (target, i) => {
  * ターンとプレイヤー名の切り替え
  */
 const changeTurn = () => {
-    if(gameObject.gameMode){
+    if(gameObject.gameMode == "no-cpu"){
         gameObject.oTurn = !gameObject.oTurn
         playerTurnElement.textContent =
             gameObject.turnCount % 2 === 0 ? 'X turn' : 'O turn'
-        gameObject.turnCount++
     }
     else{//cpu対戦の時
         gameObject.oTurn = !gameObject.oTurn
         if(gameObject.isPlayerSenkou){
             playerTurnElement.textContent =
-                gameObject.turnCount % 2 === 0 ? 'Cpu is calculationg ......' : 'Your turn'
+                gameObject.turnCount % 2 === 0 ? 'Cpu is calculationg ......' : 'Your turn';
         }
         else{
             playerTurnElement.textContent =
-                gameObject.turnCount % 2 === 0 ? 'Your turn' : 'Cpu is calculationg ......'
+                gameObject.turnCount % 2 === 0 ? 'Your turn' : 'Cpu is calculationg ......';
         }
-        gameObject.turnCount++
 
-    }    
+    }
+    gameObject.turnCount++
 }
 
 
@@ -232,13 +242,7 @@ boardCellElements.forEach((cell) => {
 
 
     //これを置くことで、クリックしたらすぐにcpuが動くようになる
-    if(gameObject.gameMode != "no-cpu"){
-        let indexOftarget = indexCpuMove();
-        console.log(String(indexOftarget));
-        selectCell(document.getElementById(String(indexOftarget)), indexOftarget)
-        changeTurn()
-        judge()  
-    }
+    cpuMove();
   })
 })
 
@@ -252,6 +256,19 @@ function mkplayOrDraw(){
     else return false;
 }
 
+
+function cpuMove(){
+    if(gameObject.gameMode != "no-cpu"){
+        playerTurnElement.textContent ='Cpu is calculationg ......'
+        let indexOftarget = indexCpuMove();
+        console.log(String(indexOftarget));
+        setTimeout(() => {
+            selectCell(document.getElementById(String(indexOftarget)), indexOftarget);
+            changeTurn();
+        judge();
+        }, 2000);
+    }
+}
 
 function indexCpuMove(){
     console.log("idxCpuMove");
@@ -268,14 +285,16 @@ function indexCpuMove(){
 function weekMove(){
     let unClickedArr = [0,1,2,3,4,5,6,7,8];
     for(let i = 0; i < gameObject.oClickedState.length; i++){
-        unClickedArr.splice(gameObject.oClickedState[i], 0);
+        unClickedArr.splice(gameObject.oClickedState[i], 1);
     }
     for(let i=0; i < gameObject.xClickedState.length; i++){
-        unClickedArr.splice(gameObject.xClickedState[i], 0);
+        unClickedArr.splice(gameObject.xClickedState[i], 1);
     }
+    
+    
 
     let index = Math.floor(Math.random()*unClickedArr.length)//0~len(arr)-1からランダムな整数を出力
-    console.log(index);
+    console.log(unClickedArr);
     console.log(unClickedArr[index]);
     return unClickedArr[index];
 }
