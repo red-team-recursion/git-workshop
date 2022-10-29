@@ -4,6 +4,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: "M PLUS Rounded 1c", sans-serif;
 }
 
 .container {
@@ -37,30 +38,43 @@ body {
     height: 300px;
     display: flex;
     flex-wrap: wrap;
+    margin-top: 20px;
 }
 
 /*cell*/
 .board-cell {
     width: calc(100% / 3);
     height: calc(100% / 3);
-    border: solid 0.5px #999;
+    border: solid 2px black;
     cursor: pointer;
     font-size: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+.board-cell:nth-child(3n + 1) {
+    border-left: none;
+}
+.board-cell:nth-child(3n + 3) {
+    border-right: none;
+}
+.board-cell:nth-child(-n + 3) {
+    border-top: none;
+}
+.board-cell:nth-child(n + 7):nth-child(-n + 9) {
+    border-bottom: none;
+}
 
 .board-cell:hover {
-    background-color: #827f7f;
+    background-color: #e0dcdc;
     opacity: 0.5;
     cursor: pointer;
 }
 
 /*選べない時にセル内の色を変えようとしたが、いまいち出来てないです*/
-.board-cell.Disable{
+.board-cell.Disable {
     opacity: 0.7;
-    background-color: #FFD83F;
+    background-color: #ffd83f;
 }
 
 /* クリック後に✖️印を追加 */
@@ -91,8 +105,14 @@ body {
     color: white;
 }
 
+.mode-select .select-text.title {
+    color: coral;
+    font-size: 150%;
+    font-weight: 800;
+    margin-bottom: 30px;
+}
 .mode-select .select-text {
-    font-size: 300%;
+    font-size: 200%;
 }
 
 .mode-select button {
@@ -100,7 +120,9 @@ body {
     border-color: white;
     background-color: white;
     font-size: 250%;
+    font-weight: 600;
     margin-top: 1rem;
+    padding: 0.8rem 1rem;
     border-radius: 3rem;
 }
 
@@ -165,7 +187,7 @@ body {
 }
 
 .menu.visible {
-    display: inline-block;
+    display: flex;
 }
 .menu div {
     margin: 10px auto;
@@ -188,12 +210,18 @@ body {
 }
 .menu .select-log button.disabled {
     color: gray;
+    cursor: not-allowed;
 }
 .menu .select-log button:hover:not(.disabled) {
     color: coral;
     padding-bottom: 2px;
 }
 
+.menu .back-top {
+    padding-bottom: 4px;
+    color: black;
+    font-weight: 600;
+}
 .menu .back-top {
     padding-bottom: 4px;
     color: black;
