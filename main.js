@@ -183,14 +183,16 @@ function judge() {
             saveResult(result)
             displayWinMessage(result)
             return
-        } else if (gameObject.turnCount === boardCellElements.length) {
-            //引き分け
-            gameObject.isOvergame = true
-            saveResult(result)
-            displayWinMessage(result)
-            return
         }
     })
+    if (gameObject.turnCount === boardCellElements.length) {
+        //引き分け
+        gameObject.isOvergame = true
+        saveResult(result)
+        displayWinMessage(result)
+        return
+    }
+
     console.log("continue..")
 }
 function setResultMessage(isCpu, isWinO, isWinX) {
