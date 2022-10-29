@@ -44,9 +44,9 @@ class Log {
   oState = gameObject.oClickedState
   xState = gameObject.xClickedState
   time = this.time()
-  winner
-  constructor(winner) {
-    this.winner = winner
+  result
+  constructor(result) {
+    this.result = result
   }
   time() {
     const dt = new Date()
@@ -55,15 +55,17 @@ class Log {
     }.${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:${dt.getSeconds()}`
   }
 }
-const saveResult = (winner) => {
-  gameLogs.unshift(new Log(winner))
+
+const saveResult = (result) => {
+  gameLogs.unshift(new Log(result))
   if (gameLogs.length > 5) {
     gameLogs.pop()
   }
   console.log(gameLogs)
   localStorage.setItem("logs", JSON.stringify(gameLogs))
 }
-const setLogs = (index) => {
+const setBoard = (index) => {
+  playerTurnElement.textContent = `${gameLogs[index].result}`
   boardCellElements.forEach((boardCell) => {
     boardCell.classList.remove("o", "x")
     boardCell.classList.add("clicked")
@@ -78,10 +80,10 @@ const setLogs = (index) => {
   })
 }
 const viewLogs = () => {
-  gameLogs.forEach((log, i) => {
+  gameLogs.forEach((_log, i) => {
     const logButton = document.createElement("button")
     logButton.innerHTML = i + 1
-    logButton.addEventListener("click", () => setLogs(i))
+    logButton.addEventListener("click", () => setBoard(i))
     logsElement.append(logButton)
   })
 }
@@ -140,9 +142,11 @@ const changeTurn = () => {
  */
 const judge = () => {
   // 全ての目が埋まった場合、引き分けと表示する
+  let result = "Draw"
   if (!boardElement.querySelectorAll(".board-cell:not(.clicked)").length) {
     finishElement.classList.add("visible")
     finishTextElement.textContent = "引き分け"
+    saveResult(result)
   }
   // 勝敗判定
   gameObject.WinningConditions.forEach((WinningConditions) => {
@@ -155,11 +159,11 @@ const judge = () => {
       gameObject.xClickedState.includes(state)
     )
     if (isWinO || isWinX) {
+      result = isWinO ? "O's Win!" : "X's Win!"
+      saveResult(result)
       boardCellElements.forEach((boardCell) =>
         boardCell.classList.add("clicked")
       )
-      const winner = isWinO ? "O" : "X"
-      saveResult(winner)
       finishElement.classList.add("visible")
       finishTextElement.textContent = isWinO ? "Oの勝利" : "Xの勝利"
     }
