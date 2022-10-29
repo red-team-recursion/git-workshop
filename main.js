@@ -1,5 +1,5 @@
 "use strict"
-const nocpu = document.getElementById("no-cpu")
+const noCpu = document.getElementById("no-cpu")
 const cpuWeek = document.getElementById("cpu-week")
 const cpuStrong = document.getElementById("cpu-strong")
 
@@ -8,7 +8,6 @@ const boardCellElements = boardElement.querySelectorAll(".board-cell")
 const playerTurnElement = document.getElementById("player-turn")
 const finishElement = document.getElementById("finish") //finish
 const finishTextElement = document.getElementById("finish-text")
-const cells = document.querySelectorAll(".board-cell")
 
 const logsShowElement = document.getElementById("show-logs")
 const logSelectElement = document.getElementById("select-log")
@@ -53,7 +52,7 @@ function startGame(gameMode) {
 
     console.log(gameObject)
 
-    document.querySelector(".finish").classList.remove("visible")
+    finishElement.classList.remove("visible")
     document.querySelector(".mode-select").classList.remove("visible")
 
     boardCellElements.forEach((cell) => {
@@ -205,20 +204,10 @@ function viewLogs() {
 
     function setButtonMenu(index) {
         page.innerHTML = `${index + 1} / ${gameLogs.length}`
-        switch (index) {
-            case 0:
-                prev.classList.add("disabled")
-                next.classList.remove("disabled")
-                break
-            case gameLogs.length - 1:
-                prev.classList.remove("disabled")
-                next.classList.add("disabled")
-                break
-            default:
-                prev.classList.remove("disabled")
-                next.classList.remove("disabled")
-                break
-        }
+        prev.classList.remove("disabled")
+        next.classList.remove("disabled")
+        if (index === 0) prev.classList.add("disabled")
+        if (index === gameLogs.length - 1) next.classList.add("disabled")
     }
 }
 function getAllLogs() {
@@ -403,49 +392,58 @@ function displayWinMessage(result) {
 // }
 
 //それぞれのゲームモードを始める　　　時間があったら変えますとりあえず、前のやつから引っ張ってきました
-document.addEventListener("click", (e) => {
-    const target = e.target
+// document.addEventListener("click", (e) => {
+//     const target = e.target
 
-    if (target.classList.contains("no-cpu")) {
-        gameObject.gameMode = "no-cpu"
+//     if (target.classList.contains("no-cpu")) {
+//         gameObject.gameMode = "no-cpu"
+//         console.log("ゲームスタート")
+//         startGame(gameObject.gameMode)
+//         return
+//     }
+
+//     if (target.classList.contains("cpu-week")) {
+//         gameObject.gameMode = "cpu-week"
+//         console.log("ゲームスタート")
+//         startGame(gameObject.gameMode)
+//         return
+//     }
+
+//     if (target.classList.contains("cpu-strong")) {
+//         gameObject.gameMode = "cpu-strong"
+//         console.log("ゲームスタート")
+//         startGame(gameObject.gameMode)
+//         return
+//     }
+// })
+function mainController() {
+    function start(gameMode) {
+        gameObject.gameMode = gameMode
         console.log("ゲームスタート")
         startGame(gameObject.gameMode)
-        return
     }
-
-    if (target.classList.contains("cpu-week")) {
-        gameObject.gameMode = "cpu-week"
-        console.log("ゲームスタート")
+    noCpu.addEventListener("click", (e) => start(e.target.id))
+    cpuWeek.addEventListener("click", (e) => start(e.target.id))
+    cpuStrong.addEventListener("click", (e) => start(e.target.id))
+    //restart
+    restartButton.addEventListener("click", (e) => {
+        finishElement.classList.remove("visible")
+        document.querySelector(".mode-select").classList.add("visible")
+        return
+    })
+    //logをみる!
+    logsShowElement.addEventListener("click", (e) => {
+        gameObject.gameMode = e.target.id
         startGame(gameObject.gameMode)
-        return
-    }
-
-    if (target.classList.contains("cpu-strong")) {
-        gameObject.gameMode = "cpu-strong"
-        console.log("ゲームスタート")
-        startGame(gameObject.gameMode)
-        return
-    }
-})
-
-//logをみる!
-logsShowElement.addEventListener("click", (e) => {
-    gameObject.gameMode = e.target.id
-    startGame(gameObject.gameMode)
-})
-
-restartButton.addEventListener("click", (e) => {
-    document.querySelector(".finish").classList.remove("visible")
-    document.querySelector(".mode-select").classList.add("visible")
-    return
-})
-
-// ゲームに戻る
-backTopElement.addEventListener("click", () => {
-    document.querySelector(".mode-select").classList.add("visible")
-    logSelectElement.innerHTML = ""
-    logSelectTextElement.innerHTML = ""
-})
+    })
+    // ゲームに戻る
+    backTopElement.addEventListener("click", () => {
+        document.querySelector(".mode-select").classList.add("visible")
+        logSelectElement.innerHTML = ""
+        logSelectTextElement.innerHTML = ""
+    })
+}
+mainController()
 
 /*
  * セルクリック時のイベント処理
@@ -453,6 +451,10 @@ backTopElement.addEventListener("click", () => {
 boardCellElements.forEach((cell) => {
     // hoverCell(cell, false)
 
+    if (gameObject.gameMode === "show-logs") {
+        cell.classList.add("clicked")
+        return
+    }
     cell.addEventListener("click", (e) => {
         const target = e.target
         const isClick = target.classList.contains("clicked")
