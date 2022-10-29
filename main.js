@@ -456,6 +456,9 @@ boardCellElements.forEach((cell) => {
         return
     }
     cell.addEventListener("click", (e) => {
+        if(cell.classList.contains("Disable")){
+            return;//何もさせない
+        }
         const target = e.target
         const isClick = target.classList.contains("clicked")
         const boardCellIndex = target.dataset.index
@@ -480,11 +483,25 @@ function mkplayOrDraw() {
     } else return false
 }
 
+function cellsDisable(){
+    for(let i = 0; i < 9; i++){
+        document.getElementById(String(i)).classList.add("Disable");
+    }
+
+}
+
+function cellsAble(){
+    for(let i = 0; i < 9; i++){
+        document.getElementById(String(i)).classList.remove("Disable");
+    }
+}
+
 function cpuMove() {
     if (gameObject.gameMode != "no-cpu") {
         //playerTurnElement.textContent ='Cpu is calculationg ......'
         let indexOftarget = indexCpuMove()
         console.log(String(indexOftarget))
+        cellsDisable()
         setTimeout(() => {
             selectCell(
                 document.getElementById(String(indexOftarget)),
@@ -492,6 +509,7 @@ function cpuMove() {
             )
             changeTurn()
             judge()
+            cellsAble()
         }, 2000)
     }
 }
