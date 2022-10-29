@@ -45,7 +45,8 @@ let gameLogs = new Array()
 //ゲームの初期化をする関数
 
 function startGame(gameMode) {
-    ;(gameObject.isOvergame = false), (gameObject.turnCount = 0)
+    gameObject.isOvergame = false
+    gameObject.turnCount = 0
     gameObject.oClickedState = []
     gameObject.xClickedState = []
     gameObject.oTurn = true
@@ -65,40 +66,53 @@ function startGame(gameMode) {
         }
     })
 
-    if (gameMode == "no-cpu") {
-        return
-    } else if (gameMode == "cpu-week") {
-        gameObject.isPlayerSenkou = mkplayOrDraw()
+    switch (gameMode) {
+        case "no-cpu":
+            playerTurnElement.textContent = "O turn"
+            break
+        case "cpu-week":
+        case "cpu-strong":
+            gameObject.isPlayerSenkou = mkplayOrDraw()
 
-        //cpuが先行ならばまずcpuを動かす
-        if (!gameObject.isPlayerSenkou) {
-            playerTurnElement.textContent = "Cpu is calculationg ......"
-            cpuMove()
-        } else playerTurnElement.textContent = "Your turn"
+            //cpuが先行ならばまずcpuを動かす
+            if (!gameObject.isPlayerSenkou) {
+                playerTurnElement.textContent = "Cpu is calculationg ......"
+                cpuMove()
+            } else {
+                playerTurnElement.textContent = "Your turn"
+            }
+            break
+        case "show-logs":
+            getAllLogs()
+            break
     }
+    // if (gameMode == "no-cpu") {
+    //     return
+    // } else if (gameMode == "cpu-week") {
+    // }
 
-    //function
-    else if (gameMode == "cpu-strong") {
-        gameObject.isPlayerSenkou = mkplayOrDraw()
+    // //function
+    // else if (gameMode == "cpu-strong") {
+    //     gameObject.isPlayerSenkou = mkplayOrDraw()
 
-        if (!gameObject.isPlayerSenkou) {
-            playerTurnElement.textContent = "Cpu is calculationg ......"
-            cpuMove()
-        } else playerTurnElement.textContent = "Your turn"
-    } else {
-        getAllLogs()
-    }
+    //     if (!gameObject.isPlayerSenkou) {
+    //         playerTurnElement.textContent = "Cpu is calculationg ......"
+    //         cpuMove()
+    //     } else playerTurnElement.textContent = "Your turn"
+    // } else {
+    //     getAllLogs()
+    // }
 }
 
 //ロード時に最初のプレイヤー名を表示
-window.addEventListener("DOMContentLoaded", () => {
-    playerTurnElement.textContent = "O turn"
-    if (gameObject.gameMode != "no-cpu") {
-        if (gameObject.isPlayerSenkou)
-            playerTurnElement.textContent = "Your turn"
-        else playerTurnElement.textContent = "Cpu is calculationg ......"
-    }
-})
+// window.addEventListener("DOMContentLoaded", () => {
+//     playerTurnElement.textContent = "O turn"
+//     if (gameObject.gameMode != "no-cpu") {
+//         if (gameObject.isPlayerSenkou)
+//             playerTurnElement.textContent = "Your turn"
+//         else playerTurnElement.textContent = "Cpu is calculationg ......"
+//     }
+// })
 
 /**
  * log
@@ -131,16 +145,16 @@ function saveResult(result) {
 // log情報を表示
 function setBoard(index) {
     playerTurnElement.textContent = `${gameLogs[index].result}`
-    boardCellElements.forEach((boardCell) => {
-        boardCell.classList.remove("o", "x")
-        boardCell.classList.add("clicked")
+    boardCellElements.forEach((cell) => {
+        cell.classList.remove("o", "x")
+        cell.classList.add("clicked")
 
-        const boardCellIndex = Number(boardCell.getAttribute("data-index"))
-        if (gameLogs[index].oState.includes(boardCellIndex)) {
-            boardCell.classList.add("o")
+        const cellIndex = Number(cell.getAttribute("data-index"))
+        if (gameLogs[index].oState.includes(cellIndex)) {
+            cell.classList.add("o")
         }
-        if (gameLogs[index].xState.includes(boardCellIndex)) {
-            boardCell.classList.add("x")
+        if (gameLogs[index].xState.includes(cellIndex)) {
+            cell.classList.add("x")
         }
     })
     logSelectTextElement.innerHTML = `${setModeName(
@@ -194,8 +208,10 @@ function viewLogs() {
         switch (index) {
             case 0:
                 prev.classList.add("disabled")
+                next.classList.remove("disabled")
                 break
             case gameLogs.length - 1:
+                prev.classList.remove("disabled")
                 next.classList.add("disabled")
                 break
             default:
@@ -214,6 +230,7 @@ function getAllLogs() {
         return
     }
     gameLogs.unshift(...logs)
+    console.log(gameLogs)
     viewLogs()
 }
 
@@ -281,15 +298,12 @@ function changeTurn() {
  */
 function judge() {
     // 全ての目が埋まった場合、引き分けと表示する
-    let result = "Draw"
-    console.log(
-        boardElement.querySelectorAll(".board-cell:not(.clicked)").length
-    )
-    if (!boardElement.querySelectorAll(".board-cell:not(.clicked)").length) {
-        gameObject.isOvergame = true
-        finishElement.classList.add("visible")
-        finishTextElement.textContent = "引き分け"
-    }
+    let result = "引き分け"
+    // if (!boardElement.querySelectorAll(".board-cell:not(.clicked)").length) {
+    //     gameObject.isOvergame = true
+    //     finishElement.classList.add("visible")
+    //     finishTextElement.textContent = "引き分け"
+    // }
     // 勝敗判定
     gameObject.WinningConditions.forEach((WinningConditions) => {
         // everyメソッドは、列内のすべての要素が指定された関数で
@@ -300,55 +314,93 @@ function judge() {
         const isWinX = WinningConditions.every((state) =>
             gameObject.xClickedState.includes(state)
         )
-        if (gameObject.gameMode == "no-cpu") {
-            displayWinMessage(isWinO, isWinX)
-        } else if (gameObject.gameMode != "no-cpu") {
-            displayWinMessageCpu(isWinO, isWinX)
+        if (isWinO || isWinX) {
+            //O or X 勝敗が決まる
+            gameObject.isOvergame = true
+            const isCpu = gameObject.gameMode !== "no-cpu" ? true : false
+            result = setResultMessage(isCpu, isWinO, isWinX)
+            console.log(result)
+            displayWinMessage(result)
+            saveResult(result)
+            return
         }
+        // if (gameObject.gameMode == "no-cpu") {
+        //     displayWinMessage(isWinO, isWinX)
+        // } else if (gameObject.gameMode != "no-cpu") {
+        //     displayWinMessageCpu(isWinO, isWinX)
+        // }
     })
-    saveResult(result)
+    if (gameObject.turnCount === boardCellElements.length) {
+        //引き分け
+        gameObject.isOvergame = true
+        displayWinMessage(result)
+        saveResult(result)
+        return
+    }
+}
+
+function setResultMessage(isCpu, isWinO, isWinX) {
+    let result = isWinO ? "O の勝ち" : "X の勝ち"
+    if (!isCpu) return result
+    if (
+        (isWinO && gameObject.isPlayerSenkou) ||
+        (isWinX && !gameObject.isPlayerSenkou)
+    ) {
+        result = "あなたの勝ち"
+    } else {
+        result = "あなたの負け（ねえ、今どんな気持ち？）"
+    }
+    return result
+}
+function displayWinMessage(result) {
+    boardCellElements.forEach((cell) => {
+        cell.classList.add("clicked")
+    })
+    finishElement.classList.add("visible")
+    finishTextElement.textContent = result
+    return
 }
 
 //二人でプレイする時の結果メッセージ
-function displayWinMessage(oInfo, xInfo) {
-    if (oInfo || xInfo) {
-        gameObject.isOvergame = true
-        document
-            .querySelectorAll(".board-cell")
-            .forEach((boardCell) => boardCell.classList.add("clicked"))
-        document.querySelector(".finish").classList.add("visible")
-        document.querySelector(".finish-text").textContent = oInfo
-            ? "Oの勝利"
-            : "Xの勝利"
-    }
-}
+// function displayWinMessage(oInfo, xInfo) {
+//     if (oInfo || xInfo) {
+//         gameObject.isOvergame = true
+//         document
+//             .querySelectorAll(".board-cell")
+//             .forEach((boardCell) => boardCell.classList.add("clicked"))
+//         document.querySelector(".finish").classList.add("visible")
+//         document.querySelector(".finish-text").textContent = oInfo
+//             ? "Oの勝利"
+//             : "Xの勝利"
+//     }
+// }
 
 //cpu対戦での結果メッセージ
-function displayWinMessageCpu(oInfo, xInfo, playOrDraw) {
-    //先行か後攻の情報が必要->先行ならtrue
-    if (oInfo || xInfo) {
-        gameObject.isOvergame = true
-        document
-            .querySelectorAll(".board-cell")
-            .forEach((boardCell) => boardCell.classList.add("clicked"))
+// function displayWinMessageCpu(oInfo, xInfo, playOrDraw) {
+//     //先行か後攻の情報が必要->先行ならtrue
+//     if (oInfo || xInfo) {
+//         gameObject.isOvergame = true
+//         document
+//             .querySelectorAll(".board-cell")
+//             .forEach((boardCell) => boardCell.classList.add("clicked"))
 
-        let oPlayer = "" //セリフを埋め込む
-        let xPlayer = ""
+//         let oPlayer = "" //セリフを埋め込む
+//         let xPlayer = ""
 
-        if (playOrDraw) {
-            oPlayer = "あなたの勝ち"
-            xPlayer = "あなたの負け（ねえ、今どんな気持ち？）"
-        } else {
-            oPlayer = "あなたの勝ち"
-            xPlayer = "あなたの負け（ねえ、今どんな気持ち？）"
-        }
+//         if (playOrDraw) {
+//             oPlayer = "あなたの勝ち"
+//             xPlayer = "あなたの負け（ねえ、今どんな気持ち？）"
+//         } else {
+//             oPlayer = "あなたの勝ち"
+//             xPlayer = "あなたの負け（ねえ、今どんな気持ち？）"
+//         }
 
-        document.querySelector(".finish").classList.add("visible")
-        document.querySelector(".finish-text").textContent = oInfo
-            ? xPlayer
-            : oPlayer
-    }
-}
+//         document.querySelector(".finish").classList.add("visible")
+//         document.querySelector(".finish-text").textContent = oInfo
+//             ? xPlayer
+//             : oPlayer
+//     }
+// }
 
 //それぞれのゲームモードを始める　　　時間があったら変えますとりあえず、前のやつから引っ張ってきました
 document.addEventListener("click", (e) => {
