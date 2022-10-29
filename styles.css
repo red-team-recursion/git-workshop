@@ -4,43 +4,43 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  
-  .container {
+}
+
+.container {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  
-  .board {
+}
+
+.board {
     width: 300px;
     height: 300px;
     display: flex;
     flex-wrap: wrap;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-  }
-  
-  .container {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-  }
-  
-  .board {
-      width: 300px;
-      height: 300px;
-      display: flex;
-      flex-wrap: wrap;
-  }
-  
-  /*cell*/
-  .board-cell {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/*cell*/
+.board-cell {
     width: calc(100% / 3);
     height: calc(100% / 3);
     border: solid 0.5px #999;
@@ -49,104 +49,159 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  
-  .board-cell:hover {
+}
+
+.board-cell:hover {
     background-color: #827f7f;
     opacity: 0.5;
     cursor: pointer;
-  }
-  
-  /* クリック後に✖️印を追加 */
-  .x::after {
-    content: 'X';
-  }
-  
-  /* クリック後に◯印を追加 */
-  .o::after {
-    content: 'O';
-  }
-  
-  .clicked {
+}
+
+/*選べない時にセル内の色を変えようとしたが、いまいち出来てないです*/
+.board-cell.Disable{
+    opacity: 0.7;
+    background-color: #FFD83F;
+}
+
+/* クリック後に✖️印を追加 */
+.x::after {
+    content: "X";
+}
+
+/* クリック後に◯印を追加 */
+.o::after {
+    content: "O";
+}
+
+.clicked {
     cursor: not-allowed;
-  }
-  
-  .mode-select {
+}
+
+.mode-select {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color:  rgba(0,0,0,.9);
+    background-color: rgba(0, 0, 0, 0.9);
     justify-content: center;
     flex-direction: column;
     align-items: center;
     color: white;
-  }
-  
-  .mode-select .select-text{
-    font-size: 300%;
-  }
+}
 
-  .mode-select button{
+.mode-select .select-text {
+    font-size: 300%;
+}
+
+.mode-select button {
     color: black;
     border-color: white;
     background-color: white;
     font-size: 250%;
     margin-top: 1rem;
     border-radius: 3rem;
-  }
+}
 
-  .mode-select button:hover{
+.mode-select button:hover {
     color: coral;
     background-color: black;
     border-color: black;
-  }
+}
 
-  .mode-select.visible{
+.mode-select.visible {
     display: flex;
-  }
+}
 
-  .finish {
+.mode-select .show-logs {
+    margin-top: 15px;
+    padding-bottom: 4px;
+    font-weight: 600;
+}
+.mode-select .show-logs:hover {
+    margin-top: 15px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    color: coral;
+    cursor: pointer;
+}
+
+.finish {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color:  rgba(0,0,0,.9);
+    background-color: rgba(0, 0, 0, 0.9);
     justify-content: center;
     flex-direction: column;
     align-items: center;
     color: white;
-  }
+}
 
-  .finish .finish-text{
+.finish .finish-text {
     font-size: 500%;
-  }
+}
 
-  .finish button{
+.finish button {
     color: black;
     border-color: white;
     background-color: white;
     font-size: 200%;
     margin-top: 1rem;
     border-radius: 3rem;
-  }
+}
 
-  .finish button:hover{
+.finish button:hover {
     color: coral;
     background-color: black;
     border-color: black;
-  }
+}
 
-  .finish.visible{
+.finish.visible {
     display: flex;
-  }
+}
 
-  .board-cell:hover {
-      background-color: #827f7f;
-      opacity: 0.5;
-      cursor: pointer;
-  }
+.menu.visible {
+    display: inline-block;
+}
+.menu div {
+    margin: 10px auto;
+    text-align: center;
+}
+.menu .select-log {
+    height: 50px;
+}
+
+.menu .select-log button {
+    width: 40px;
+    height: 35px;
+    margin: 0 15px;
+    padding: 4px 2px;
+    border: none;
+    border-radius: 0.5vh;
+    background-color: black;
+    font-size: 1.2rem;
+    color: white;
+}
+.menu .select-log button.disabled {
+    color: gray;
+}
+.menu .select-log button:hover:not(.disabled) {
+    color: coral;
+    padding-bottom: 2px;
+}
+
+.menu .back-top {
+    padding-bottom: 4px;
+    color: black;
+    font-weight: 600;
+}
+.menu .back-top:hover {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    color: coral;
+    cursor: pointer;
+}

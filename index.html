@@ -1,49 +1,61 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-      crossorigin="anonymous"
-    />
-    <title>Tic Tac Toe</title>
-  </head>
-  <body>
-    <div id = "mode-select" class = "mode-select visible">
-      <div class="select-text">モードを選択してね🥺</div>
-      <button id = "no-cpu" class="no-cpu">二人で遊ぶ</button>
-      <button id = "cpu-week" class="cpu-week">CPUと対戦（弱い）</button>
-      <button id = "cpu-strog" class="cpu-strong">CPUと対戦（強い）</button>
-    </div>
-    <div class="container">
-      <div id="info">
-        <!-- どっちのターン？かを描画する -->
-        <h3 id="player-turn"></h3>
-      </div>
-      <div id="board" class="board">
-        <div id = "0" class="board-cell" data-index="0"></div>
-        <div id = "1" class="board-cell" data-index="1"></div>
-        <div id = "2" class="board-cell" data-index="2"></div>
-        <div id = "3" class="board-cell" data-index="3"></div>
-        <div id = "4" class="board-cell" data-index="4"></div>
-        <div id = "5" class="board-cell" data-index="5"></div>
-        <div id = "6" class="board-cell" data-index="6"></div>
-        <div id = "7" class="board-cell" data-index="7"></div>
-        <div id = "8" class="board-cell" data-index="8"></div>
-      </div>
-      <div id = "finish" class="finish">
-        <span id = "finish-text" class="finish-text"></span>
-        <button id = "restart" class="restart">Restart</button>
-      </div>
-      <!-- <div id="menu">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="styles.css" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500&display=swap"
+            rel="stylesheet"
+        />
+        <title>Tic Tac Toe</title>
+    </head>
+    <body>
+        <div id="mode-select" class="mode-select visible">
+            <div class="select-text">モードを選択してね🥺</div>
+            <button id="no-cpu" class="no-cpu">二人で遊ぶ</button>
+            <button id="cpu-week" class="cpu-week">CPUと対戦（弱い）</button>
+            <button id="cpu-strog" class="cpu-strong">CPUと対戦（強い）</button>
+            <div id="show-logs" class="show-logs">直近の戦績をみる</div>
+        </div>
+        <div class="container">
+            <div id="info">
+                <!-- どっちのターン？かを描画する -->
+                <h3 id="player-turn"></h3>
+            </div>
+            <div id="board" class="board">
+                <div id="0" class="board-cell" data-index="0"></div>
+                <div id="1" class="board-cell" data-index="1"></div>
+                <div id="2" class="board-cell" data-index="2"></div>
+                <div id="3" class="board-cell" data-index="3"></div>
+                <div id="4" class="board-cell" data-index="4"></div>
+                <div id="5" class="board-cell" data-index="5"></div>
+                <div id="6" class="board-cell" data-index="6"></div>
+                <div id="7" class="board-cell" data-index="7"></div>
+                <div id="8" class="board-cell" data-index="8"></div>
+            </div>
+            <div class="menu visible">
+                <div id="select-log-text"></div>
+                <div id="select-log" class="select-log"></div>
+                <div id="back-top" class="back-top">トップに戻る↩</div>
+            </div>
+            <div id="finish" class="finish">
+                <span id="finish-text" class="finish-text"></span>
+                <button id="restart" class="restart">Restart</button>
+            </div>
+            <!-- <div id="menu">
         <button id="continue">こんてぃにゅー</button>
       </div> -->
-    </div>
-    <script type="text/javascript" src="main.js"></script>
-  </body>
-</html
+        </div>
+        <script type="text/javascript" src="main.js"></script>
+    </body>
+</html>
