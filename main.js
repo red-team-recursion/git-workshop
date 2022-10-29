@@ -186,6 +186,7 @@ function judge() {
         }
     })
     if (gameObject.turnCount === boardCellElements.length) {
+        if (gameObject.isOvergame) return
         //引き分け
         gameObject.isOvergame = true
         saveResult(result)
