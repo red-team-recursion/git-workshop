@@ -11,8 +11,9 @@ const finishTextElement = document.getElementById("finish-text")
 const cells = document.querySelectorAll(".board-cell")
 
 const logsShowElement = document.getElementById("show-logs")
-const logsElement = document.getElementById("logs")
-const backGameElement = document.getElementById("back-game")
+const logSelectElement = document.getElementById("select-log")
+const logSelectTextElement = document.getElementById("select-log-text")
+const backTopElement = document.getElementById("back-top")
 
 const restartButton = document.getElementById("restart")
 
@@ -38,7 +39,7 @@ const gameObject = {
     ],
 }
 
-const gameLogs = new Array()
+let gameLogs = new Array()
 
 //ゲームの初期化をする関数
 function startGame(gameMode) {
@@ -48,6 +49,7 @@ function startGame(gameMode) {
     gameObject.oTurn = true
 
     console.log(gameObject)
+
     document.querySelector(".finish").classList.remove("visible")
     document.querySelector(".mode-select").classList.remove("visible")
 
@@ -62,26 +64,37 @@ function startGame(gameMode) {
     })
 
     if (gameMode == "no-cpu") {
-        //kannsuu
+        return
     } else if (gameMode == "cpu-week") {
         gameObject.isPlayerSenkou = mkplayOrDraw()
-        //function
-    } else if (gameMode == "cpu-strong") {
+
+        //cpuが先行ならばまずcpuを動かす
+        if (!gameObject.isPlayerSenkou) {
+            playerTurnElement.textContent = "Cpu is calculationg ......"
+            setTimeout(cpuMove(), 2000)
+        } else playerTurnElement.textContent = "Your turn"
+    }
+
+    //function
+    else if (gameMode == "cpu-strong") {
         gameObject.isPlayerSenkou = mkplayOrDraw()
-        //function
+
+        if (!gameObject.isPlayerSenkou) {
+            setTimeout(cpuMove(), 2000)
+        }
+    } else {
+        getAllLogs()
     }
 }
 
 //ロード時に最初のプレイヤー名を表示
 window.addEventListener("DOMContentLoaded", () => {
     playerTurnElement.textContent = "O turn"
-    console.log(gameObject)
     if (gameObject.gameMode != "no-cpu") {
         if (gameObject.isPlayerSenkou)
             playerTurnElement.textContent = "Your turn"
         else playerTurnElement.textContent = "Cpu is calculationg ......"
     }
-    getAllLogs()
 })
 
 /**
@@ -102,20 +115,6 @@ class Log {
             dt.getMonth() + 1
         }.${dt.getDate()} ${dt.getHours()}:${dt.getMinutes()}:${dt.getSeconds()}`
     }
-    setMode(mode) {
-        let str = "二人で対戦"
-        switch (mode) {
-            case "cpu-week":
-                str = "CPUと対戦（弱い）"
-                break
-            case "cpu-strong":
-                str = "CPUと対戦（強い）"
-                break
-            default:
-                break
-        }
-        return str
-    }
 }
 
 function saveResult(result) {
@@ -126,6 +125,7 @@ function saveResult(result) {
     console.log(gameLogs)
     localStorage.setItem("logs", JSON.stringify(gameLogs))
 }
+// log情報を表示
 function setBoard(index) {
     playerTurnElement.textContent = `${gameLogs[index].result}`
     boardCellElements.forEach((boardCell) => {
@@ -140,26 +140,78 @@ function setBoard(index) {
             boardCell.classList.add("x")
         }
     })
+    logSelectTextElement.innerHTML = `${setModeName(
+        gameLogs[index].gameMode
+    )}<br>${gameLogs[index].time}`
+    function setModeName(gameMode) {
+        let str = "【 "
+        switch (gameMode) {
+            case "cpu-week":
+                str += "CPU弱と対戦"
+                break
+            case "cpu-strong":
+                str += "CPU強と対戦"
+                break
+            default:
+                str += "ふたりで対戦"
+                break
+        }
+        str += " 】"
+        return str
+    }
 }
 function viewLogs() {
-    gameLogs.forEach((_log, i) => {
-        const logButton = document.createElement("button")
-        logButton.innerHTML = i + 1
-        logButton.addEventListener("click", () => setBoard(i))
-        logsElement.append(logButton)
+    //初期表示
+    let index = 0
+    setBoard(index)
+
+    const prev = document.createElement("button")
+    const next = document.createElement("button")
+    prev.innerHTML = "◀"
+    next.innerHTML = "▶"
+    const page = document.createElement("span")
+    logSelectElement.append(prev, page, next)
+    setButtonMenu(index)
+
+    prev.addEventListener("click", (e) => {
+        if (index === 0) return
+        index -= 1
+        setButtonMenu(index)
+        return setBoard(index)
     })
+    next.addEventListener("click", (e) => {
+        if (index === gameLogs.length - 1) return
+        index += 1
+        setButtonMenu(index)
+        return setBoard(index)
+    })
+
+    function setButtonMenu(index) {
+        page.innerHTML = `${index + 1} / ${gameLogs.length}`
+        switch (index) {
+            case 0:
+                prev.classList.add("disabled")
+                break
+            case gameLogs.length - 1:
+                next.classList.add("disabled")
+                break
+            default:
+                prev.classList.remove("disabled")
+                next.classList.remove("disabled")
+                break
+        }
+    }
 }
 function getAllLogs() {
+    gameLogs = new Array()
     // localStorage.removeItem("logs")
     const logs = JSON.parse(localStorage.getItem("logs"))
-    if (!logs) return
+    if (!logs) {
+        // 戦績なしのひょうじ
+        return
+    }
     gameLogs.unshift(...logs)
     viewLogs()
-
-    // ゲームに戻る
-    backGameElement.addEventListener("click", () => {
-        document.querySelector(".mode-select").classList.add("visible")
-    })
 }
 
 /*
@@ -198,11 +250,10 @@ const hoverCell = (cell, clicked) => {
  * ターンとプレイヤー名の切り替え
  */
 const changeTurn = () => {
-    if (gameObject.gameMode) {
+    if (gameObject.gameMode == "no-cpu") {
         gameObject.oTurn = !gameObject.oTurn
         playerTurnElement.textContent =
             gameObject.turnCount % 2 === 0 ? "X turn" : "O turn"
-        gameObject.turnCount++
     } else {
         //cpu対戦の時
         gameObject.oTurn = !gameObject.oTurn
@@ -217,8 +268,9 @@ const changeTurn = () => {
                     ? "Your turn"
                     : "Cpu is calculationg ......"
         }
-        gameObject.turnCount++
     }
+    gameObject.turnCount++
+    console.log("turnCount : " + gameObject.turnCount)
 }
 
 /*
@@ -329,6 +381,13 @@ restartButton.addEventListener("click", (e) => {
     return
 })
 
+// ゲームに戻る
+backTopElement.addEventListener("click", () => {
+    document.querySelector(".mode-select").classList.add("visible")
+    logSelectElement.innerHTML = ""
+    logSelectTextElement.innerHTML = ""
+})
+
 /*
  * セルクリック時のイベント処理
  */
@@ -341,25 +400,12 @@ boardCellElements.forEach((cell) => {
         const boardCellIndex = target.dataset.index
 
         if (!isClick) {
-            // hoverCell(cell, true)
             selectCell(target, boardCellIndex)
             changeTurn()
             judge()
         }
-
         //これを置くことで、クリックしたらすぐにcpuが動くようになる
-        if (gameObject.gameMode != "no-cpu") {
-            let indexOftarget = indexCpuMove()
-            console.log(String(indexOftarget))
-            setTimeout(() => {
-                selectCell(
-                    document.getElementById(String(indexOftarget)),
-                    indexOftarget
-                )
-                changeTurn()
-                judge()
-            }, 2000)
-        }
+        cpuMove()
     })
 })
 
@@ -368,6 +414,22 @@ function mkplayOrDraw() {
     if (Math.floor(Math.random() * 100) % 2 == 0) {
         return true
     } else return false
+}
+
+function cpuMove() {
+    if (gameObject.gameMode != "no-cpu") {
+        //playerTurnElement.textContent ='Cpu is calculationg ......'
+        let indexOftarget = indexCpuMove()
+        console.log(String(indexOftarget))
+        setTimeout(() => {
+            selectCell(
+                document.getElementById(String(indexOftarget)),
+                indexOftarget
+            )
+            changeTurn()
+            judge()
+        }, 2000)
+    }
 }
 
 function indexCpuMove() {
@@ -381,16 +443,35 @@ function indexCpuMove() {
 
 //クリックされていない配列の中からランダムにクリックするインデックスを生成
 function weekMove() {
-    let unClickedArr = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    let unClickedArr = []
+
+    let unClickedDic = {
+        0: true,
+        1: true,
+        2: true,
+        3: true,
+        4: true,
+        5: true,
+        6: true,
+        7: true,
+        8: true,
+    }
+
     for (let i = 0; i < gameObject.oClickedState.length; i++) {
-        unClickedArr.splice(gameObject.oClickedState[i], 0)
+        key = gameObject.oClickedState[i]
+        unClickedDic[key] = false
     }
     for (let i = 0; i < gameObject.xClickedState.length; i++) {
-        unClickedArr.splice(gameObject.xClickedState[i], 0)
+        key = gameObject.xClickedState[i]
+        unClickedDic[key] = false
+    }
+
+    for (var key in unClickedDic) {
+        if (unClickedDic[key]) unClickedArr.push(key)
     }
 
     let index = Math.floor(Math.random() * unClickedArr.length) //0~len(arr)-1からランダムな整数を出力
-    console.log(index)
+    console.log(unClickedArr)
     console.log(unClickedArr[index])
     return unClickedArr[index]
 }

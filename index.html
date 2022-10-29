@@ -11,6 +11,12 @@
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
             crossorigin="anonymous"
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500&display=swap"
+            rel="stylesheet"
+        />
         <title>Tic Tac Toe</title>
     </head>
     <body>
@@ -37,8 +43,10 @@
                 <div id="7" class="board-cell" data-index="7"></div>
                 <div id="8" class="board-cell" data-index="8"></div>
             </div>
-            <div id="logs" class="logs">
-                <div id="back-game">ゲームに戻る</div>
+            <div class="menu visible">
+                <div id="select-log-text"></div>
+                <div id="select-log" class="select-log"></div>
+                <div id="back-top" class="back-top">トップに戻る↩</div>
             </div>
             <div id="finish" class="finish">
                 <span id="finish-text" class="finish-text"></span>

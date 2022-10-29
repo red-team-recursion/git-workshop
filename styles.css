@@ -110,6 +110,15 @@ body {
 
 .mode-select .show-logs {
     margin-top: 15px;
+    padding-bottom: 4px;
+    font-weight: 600;
+}
+.mode-select .show-logs:hover {
+    margin-top: 15px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    color: coral;
+    cursor: pointer;
 }
 
 .finish {
@@ -147,4 +156,46 @@ body {
 
 .finish.visible {
     display: flex;
+}
+
+.menu.visible {
+    display: inline-block;
+}
+.menu div {
+    margin: 10px auto;
+    text-align: center;
+}
+.menu .select-log {
+    height: 50px;
+}
+
+.menu .select-log button {
+    width: 40px;
+    height: 35px;
+    margin: 0 15px;
+    padding: 4px 2px;
+    border: none;
+    border-radius: 0.5vh;
+    background-color: black;
+    font-size: 1.2rem;
+    color: white;
+}
+.menu .select-log button.disabled {
+    color: gray;
+}
+.menu .select-log button:hover:not(.disabled) {
+    color: coral;
+    padding-bottom: 2px;
+}
+
+.menu .back-top {
+    padding-bottom: 4px;
+    color: black;
+    font-weight: 600;
+}
+.menu .back-top:hover {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    color: coral;
+    cursor: pointer;
 }
