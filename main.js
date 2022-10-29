@@ -21,6 +21,7 @@ const gameObject = {
     gameMode: "no-cpu", //no-cpu, cpu-week,cpu-strongの三つのモードがある
     oTurn: true,
     turnCount: 0,
+    isOvergame: false,
     isPlayerSenkou: false, //cpu対戦で使う
     oClickedState: [],
     xClickedState: [],
@@ -42,8 +43,9 @@ const gameObject = {
 let gameLogs = new Array()
 
 //ゲームの初期化をする関数
+
 function startGame(gameMode) {
-    gameObject.turnCount = 0
+    ;(gameObject.isOvergame = false), (gameObject.turnCount = 0)
     gameObject.oClickedState = []
     gameObject.xClickedState = []
     gameObject.oTurn = true
@@ -71,7 +73,7 @@ function startGame(gameMode) {
         //cpuが先行ならばまずcpuを動かす
         if (!gameObject.isPlayerSenkou) {
             playerTurnElement.textContent = "Cpu is calculationg ......"
-            setTimeout(cpuMove(), 2000)
+            cpuMove()
         } else playerTurnElement.textContent = "Your turn"
     }
 
@@ -80,8 +82,9 @@ function startGame(gameMode) {
         gameObject.isPlayerSenkou = mkplayOrDraw()
 
         if (!gameObject.isPlayerSenkou) {
-            setTimeout(cpuMove(), 2000)
-        }
+            playerTurnElement.textContent = "Cpu is calculationg ......"
+            cpuMove()
+        } else playerTurnElement.textContent = "Your turn"
     } else {
         getAllLogs()
     }
@@ -217,7 +220,7 @@ function getAllLogs() {
 /*
  * 指定したセルを更新する
  */
-const selectCell = (target, i) => {
+function selectCell(target, i) {
     gameObject.oTurn
         ? gameObject.oClickedState.push(parseInt(i))
         : gameObject.xClickedState.push(parseInt(i))
@@ -226,10 +229,10 @@ const selectCell = (target, i) => {
 }
 
 //hoverの処理は一旦おいておく..
-const turn = () => {
+function turn() {
     return gameObject.oTurn ? "o" : "x"
 }
-const hoverCell = (cell, clicked) => {
+function hoverCell(cell, clicked) {
     function add() {
         cell.classList.add(turn())
     }
@@ -249,7 +252,7 @@ const hoverCell = (cell, clicked) => {
 /*
  * ターンとプレイヤー名の切り替え
  */
-const changeTurn = () => {
+function changeTurn() {
     if (gameObject.gameMode == "no-cpu") {
         gameObject.oTurn = !gameObject.oTurn
         playerTurnElement.textContent =
@@ -276,13 +279,16 @@ const changeTurn = () => {
 /*
  * 勝敗・引き分け判定及び結果の表示
  */
-const judge = () => {
+function judge() {
     // 全ての目が埋まった場合、引き分けと表示する
     let result = "Draw"
+    console.log(
+        boardElement.querySelectorAll(".board-cell:not(.clicked)").length
+    )
     if (!boardElement.querySelectorAll(".board-cell:not(.clicked)").length) {
+        gameObject.isOvergame = true
         finishElement.classList.add("visible")
         finishTextElement.textContent = "引き分け"
-        saveResult(result)
     }
     // 勝敗判定
     gameObject.WinningConditions.forEach((WinningConditions) => {
@@ -294,19 +300,19 @@ const judge = () => {
         const isWinX = WinningConditions.every((state) =>
             gameObject.xClickedState.includes(state)
         )
-
-        if (gameObject.gameMode == "no-cpu") displayWinMessage(isWinO, isWinX)
-        else if (
-            gameObject.gameMode == "cpu-week" ||
-            gameObject.gameMode == "cpu-strong"
-        )
+        if (gameObject.gameMode == "no-cpu") {
+            displayWinMessage(isWinO, isWinX)
+        } else if (gameObject.gameMode != "no-cpu") {
             displayWinMessageCpu(isWinO, isWinX)
+        }
     })
+    saveResult(result)
 }
 
 //二人でプレイする時の結果メッセージ
 function displayWinMessage(oInfo, xInfo) {
     if (oInfo || xInfo) {
+        gameObject.isOvergame = true
         document
             .querySelectorAll(".board-cell")
             .forEach((boardCell) => boardCell.classList.add("clicked"))
@@ -321,6 +327,7 @@ function displayWinMessage(oInfo, xInfo) {
 function displayWinMessageCpu(oInfo, xInfo, playOrDraw) {
     //先行か後攻の情報が必要->先行ならtrue
     if (oInfo || xInfo) {
+        gameObject.isOvergame = true
         document
             .querySelectorAll(".board-cell")
             .forEach((boardCell) => boardCell.classList.add("clicked"))
@@ -332,14 +339,14 @@ function displayWinMessageCpu(oInfo, xInfo, playOrDraw) {
             oPlayer = "あなたの勝ち"
             xPlayer = "あなたの負け（ねえ、今どんな気持ち？）"
         } else {
-            oPlayer = "あなたの負け（ねえ、今どんな気持ち？）"
-            xPlayer = "あなたの勝ち"
+            oPlayer = "あなたの勝ち"
+            xPlayer = "あなたの負け（ねえ、今どんな気持ち？）"
         }
 
         document.querySelector(".finish").classList.add("visible")
         document.querySelector(".finish-text").textContent = oInfo
-            ? oPlayer
-            : xPlayer
+            ? xPlayer
+            : oPlayer
     }
 }
 
@@ -404,8 +411,11 @@ boardCellElements.forEach((cell) => {
             changeTurn()
             judge()
         }
+        console.log("isGameOver : " + gameObject.isOvergame)
         //これを置くことで、クリックしたらすぐにcpuが動くようになる
-        cpuMove()
+        if (!gameObject.isOvergame) {
+            cpuMove()
+        }
     })
 })
 
@@ -444,7 +454,16 @@ function indexCpuMove() {
 //クリックされていない配列の中からランダムにクリックするインデックスを生成
 function weekMove() {
     let unClickedArr = []
+    searchUnclickedCell(unClickedArr)
 
+    let index = Math.floor(Math.random() * unClickedArr.length) //0~len(arr)-1からランダムな整数を出力
+    console.log(unClickedArr)
+    console.log(unClickedArr[index])
+    return unClickedArr[index]
+}
+
+//arr -> arr
+function searchUnclickedCell(arr) {
     let unClickedDic = {
         0: true,
         1: true,
@@ -467,13 +486,71 @@ function weekMove() {
     }
 
     for (var key in unClickedDic) {
-        if (unClickedDic[key]) unClickedArr.push(key)
+        if (unClickedDic[key]) arr.push(key)
     }
-
-    let index = Math.floor(Math.random() * unClickedArr.length) //0~len(arr)-1からランダムな整数を出力
-    console.log(unClickedArr)
-    console.log(unClickedArr[index])
-    return unClickedArr[index]
 }
 
-function strongMove() {}
+function strongMove() {
+    let unClickedArr = []
+    let maxWeightIndex = 0
+
+    let cpuWeights = {
+        0: 1,
+        1: 1,
+        2: 1,
+        3: 1,
+        4: 1,
+        5: 1,
+        6: 1,
+        7: 1,
+        8: 1,
+    }
+
+    searchUnclickedCell(unClickedArr)
+
+    if (gameObject.isPlayerSenkou) {
+        for (let i = 0; i < gameObject.oClickedState.length; i++) {
+            let value = gameObject.oClickedState[i]
+            for (let row = 0; row < 8; row++) {
+                let stateArr = gameObject.WinningConditions[row]
+                addCpuWeight(value, stateArr)
+            }
+        }
+    } else {
+        for (let i = 0; i < gameObject.xClickedState.length; i++) {
+            let value = gameObject.xClickedState[i]
+            for (let row = 0; row < 8; row++) {
+                let stateArr = gameObject.WinningConditions[row]
+                addCpuWeight(value, stateArr)
+            }
+        }
+    }
+
+    //ここまでで重さはもとまった
+    console.log(cpuWeights)
+    console.log("unClicked")
+    console.log(unClickedArr)
+
+    maxWeightIndex = unClickedArr[0]
+    //まだクリックしていないセルの中で最も重みの大きいインデックスを出力する
+    for (let i = 0; i < unClickedArr.length; i++) {
+        console.log("unClickedArr.length" + unClickedArr.length)
+        console.log("maxIndex : " + maxWeightIndex)
+        if (cpuWeights[unClickedArr[i]] >= cpuWeights[maxWeightIndex]) {
+            maxWeightIndex = unClickedArr[i]
+        }
+    }
+
+    return maxWeightIndex
+
+    //stateの中に入っているのかを見る
+    function addCpuWeight(value, stateArr) {
+        for (let i = 0; i < 3; i++) {
+            if (stateArr[i] == value) {
+                cpuWeights[stateArr[0]] += 1
+                cpuWeights[stateArr[1]] += 1
+                cpuWeights[stateArr[2]] += 1
+            }
+        }
+    }
+}
