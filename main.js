@@ -123,6 +123,7 @@ const changeTurn = () => {
 
     }
     gameObject.turnCount++
+    console.log("turnCount : "+gameObject.turnCount);
 }
 
 
@@ -186,8 +187,8 @@ function displayWinMessageCpu(oInfo, xInfo, playOrDraw){//先行か後攻の情�
   
       document.querySelector('.finish').classList.add('visible');
       document.querySelector('.finish-text').textContent = oInfo
-        ? oPlayer
-        : xPlayer;
+        ? xPlayer
+        : oPlayer;
     }
 }
 
@@ -259,13 +260,13 @@ function mkplayOrDraw(){
 
 function cpuMove(){
     if(gameObject.gameMode != "no-cpu"){
-        playerTurnElement.textContent ='Cpu is calculationg ......'
+        //playerTurnElement.textContent ='Cpu is calculationg ......'
         let indexOftarget = indexCpuMove();
         console.log(String(indexOftarget));
         setTimeout(() => {
             selectCell(document.getElementById(String(indexOftarget)), indexOftarget);
             changeTurn();
-        judge();
+            judge();
         }, 2000);
     }
 }
@@ -283,15 +284,33 @@ function indexCpuMove(){
 
 //クリックされていない配列の中からランダムにクリックするインデックスを生成
 function weekMove(){
-    let unClickedArr = [0,1,2,3,4,5,6,7,8];
+
+    let unClickedArr = []
+
+    let unClickedDic = {
+        0 : true,
+        1 : true,
+        2 : true,
+        3 : true,
+        4 : true,
+        5 : true,
+        6 : true,
+        7 : true,
+        8 : true
+    };
+
     for(let i = 0; i < gameObject.oClickedState.length; i++){
-        unClickedArr.splice(gameObject.oClickedState[i], 1);
+        key = gameObject.oClickedState[i];
+        unClickedDic[key] = false;
     }
     for(let i=0; i < gameObject.xClickedState.length; i++){
-        unClickedArr.splice(gameObject.xClickedState[i], 1);
+        key = gameObject.xClickedState[i];
+        unClickedDic[key] = false;
     }
     
-    
+    for(var key in unClickedDic){
+        if(unClickedDic[key]) unClickedArr.push(key)
+    }
 
     let index = Math.floor(Math.random()*unClickedArr.length)//0~len(arr)-1からランダムな整数を出力
     console.log(unClickedArr);
@@ -302,3 +321,4 @@ function weekMove(){
 function strongMove(){
 
 }
+
