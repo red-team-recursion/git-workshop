@@ -116,7 +116,7 @@ function clickCellEvent(e) {
         changeTurn()
         judge()
     }
-    console.log("isGameOver : " + gameObject.isOvergame)
+    // console.log("isGameOver : " + gameObject.isOvergame)
     //これを置くことで、クリックしたらすぐにcpuが動くようになる
     if (!gameObject.isOvergame) {
         cpuMove()
