@@ -56,7 +56,7 @@ function startGame(gameMode) {
     document.querySelector(".finish").classList.remove("visible")
     document.querySelector(".mode-select").classList.remove("visible")
 
-    cells.forEach((cell) => {
+    boardCellElements.forEach((cell) => {
         //初期化
         cell.classList.remove("clicked")
         if (cell.classList.contains("o")) {
@@ -190,13 +190,13 @@ function viewLogs() {
     logSelectElement.append(prev, page, next)
     setButtonMenu(index)
 
-    prev.addEventListener("click", (e) => {
+    prev.addEventListener("click", () => {
         if (index === 0) return
         index -= 1
         setButtonMenu(index)
         return setBoard(index)
     })
-    next.addEventListener("click", (e) => {
+    next.addEventListener("click", () => {
         if (index === gameLogs.length - 1) return
         index += 1
         setButtonMenu(index)
@@ -323,6 +323,12 @@ function judge() {
             displayWinMessage(result)
             saveResult(result)
             return
+        } else if (gameObject.turnCount === boardCellElements.length) {
+            //引き分け
+            gameObject.isOvergame = true
+            displayWinMessage(result)
+            saveResult(result)
+            return
         }
         // if (gameObject.gameMode == "no-cpu") {
         //     displayWinMessage(isWinO, isWinX)
@@ -330,13 +336,7 @@ function judge() {
         //     displayWinMessageCpu(isWinO, isWinX)
         // }
     })
-    if (gameObject.turnCount === boardCellElements.length) {
-        //引き分け
-        gameObject.isOvergame = true
-        displayWinMessage(result)
-        saveResult(result)
-        return
-    }
+    console.log("continue..")
 }
 
 function setResultMessage(isCpu, isWinO, isWinX) {
