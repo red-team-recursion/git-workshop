@@ -4,6 +4,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: "M PLUS Rounded 1c", sans-serif;
 }
 
 .container {
@@ -107,8 +108,8 @@ body {
 .mode-select .select-text.title {
     color: coral;
     font-size: 150%;
-    font-weight: 600;
-    margin-bottom: 20px;
+    font-weight: 800;
+    margin-bottom: 30px;
 }
 .mode-select .select-text {
     font-size: 200%;
@@ -119,6 +120,7 @@ body {
     border-color: white;
     background-color: white;
     font-size: 250%;
+    font-weight: 600;
     margin-top: 1rem;
     padding: 0.8rem 1rem;
     border-radius: 3rem;
