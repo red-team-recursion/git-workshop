@@ -1,15 +1,17 @@
 "use strict"
+//menu
 const noCpu = document.getElementById("no-cpu")
 const cpuWeek = document.getElementById("cpu-week")
 const cpuStrong = document.getElementById("cpu-strong")
-
+const showLogs = document.getElementById("show-logs")
+//board
 const boardElement = document.getElementById("board")
 const boardCellElements = boardElement.querySelectorAll(".board-cell")
 const playerTurnElement = document.getElementById("player-turn")
+
 const finishElement = document.getElementById("finish") //finish
 const finishTextElement = document.getElementById("finish-text")
 
-const logsShowElement = document.getElementById("show-logs")
 const logSelectElement = document.getElementById("select-log")
 const logSelectTextElement = document.getElementById("select-log-text")
 const backTopElement = document.getElementById("back-top")
@@ -63,6 +65,35 @@ function startGame(gameMode) {
         } else if (cell.classList.contains("x")) {
             cell.classList.remove("x")
         }
+
+        cell.addEventListener("click", (e) => {
+            if (gameObject.gameMode === "show-logs") {
+                cell.classList.add("clicked")
+                return
+            }
+            if (cell.classList.contains("Disable")) {
+                return //何もさせない
+            }
+            cellEvent(e)
+        })
+        //     if (cell.classList.contains("Disable")) {
+        //         return //何もさせない
+        //     }
+        //     const target = e.target
+        //     const isClick = target.classList.contains("clicked")
+        //     const boardCellIndex = target.dataset.index
+
+        //     if (!isClick) {
+        //         selectCell(target, boardCellIndex)
+        //         changeTurn()
+        //         judge()
+        //     }
+        //     console.log("isGameOver : " + gameObject.isOvergame)
+        //     //これを置くことで、クリックしたらすぐにcpuが動くようになる
+        //     if (!gameObject.isOvergame) {
+        //         cpuMove()
+        //     }
+        // })
     })
 
     switch (gameMode) {
@@ -255,6 +286,23 @@ function hoverCell(cell, clicked) {
     }
 }
 
+function cellEvent(e) {
+    const target = e.target
+    const isClick = target.classList.contains("clicked")
+    const boardCellIndex = target.dataset.index
+
+    if (!isClick) {
+        selectCell(target, boardCellIndex)
+        changeTurn()
+        judge()
+    }
+    console.log("isGameOver : " + gameObject.isOvergame)
+    //これを置くことで、クリックしたらすぐにcpuが動くようになる
+    if (!gameObject.isOvergame) {
+        cpuMove()
+    }
+}
+
 /*
  * ターンとプレイヤー名の切り替え
  */
@@ -295,6 +343,7 @@ function judge() {
     // }
     // 勝敗判定
     gameObject.WinningConditions.forEach((WinningConditions) => {
+        if (gameObject.isOvergame) return
         // everyメソッドは、列内のすべての要素が指定された関数で
         // 実装されたテストに合格するかどうかを確認する
         const isWinO = WinningConditions.every((state) =>
@@ -309,14 +358,14 @@ function judge() {
             const isCpu = gameObject.gameMode !== "no-cpu" ? true : false
             result = setResultMessage(isCpu, isWinO, isWinX)
             console.log(result)
-            displayWinMessage(result)
             saveResult(result)
+            displayWinMessage(result)
             return
         } else if (gameObject.turnCount === boardCellElements.length) {
             //引き分け
             gameObject.isOvergame = true
-            displayWinMessage(result)
             saveResult(result)
+            displayWinMessage(result)
             return
         }
         // if (gameObject.gameMode == "no-cpu") {
@@ -425,16 +474,12 @@ function mainController() {
     noCpu.addEventListener("click", (e) => start(e.target.id))
     cpuWeek.addEventListener("click", (e) => start(e.target.id))
     cpuStrong.addEventListener("click", (e) => start(e.target.id))
+    showLogs.addEventListener("click", (e) => start(e.target.id))
     //restart
     restartButton.addEventListener("click", (e) => {
         finishElement.classList.remove("visible")
         document.querySelector(".mode-select").classList.add("visible")
         return
-    })
-    //logをみる!
-    logsShowElement.addEventListener("click", (e) => {
-        gameObject.gameMode = e.target.id
-        startGame(gameObject.gameMode)
     })
     // ゲームに戻る
     backTopElement.addEventListener("click", () => {
@@ -448,33 +493,33 @@ mainController()
 /*
  * セルクリック時のイベント処理
  */
-boardCellElements.forEach((cell) => {
-    // hoverCell(cell, false)
+// boardCellElements.forEach((cell) => {
+//     // hoverCell(cell, false)
 
-    if (gameObject.gameMode === "show-logs") {
-        cell.classList.add("clicked")
-        return
-    }
-    cell.addEventListener("click", (e) => {
-        if(cell.classList.contains("Disable")){
-            return;//何もさせない
-        }
-        const target = e.target
-        const isClick = target.classList.contains("clicked")
-        const boardCellIndex = target.dataset.index
+//     if (gameObject.gameMode === "show-logs") {
+//         cell.classList.add("clicked")
+//         return
+//     }
+//     cell.addEventListener("click", (e) => {
+//         if (cell.classList.contains("Disable")) {
+//             return //何もさせない
+//         }
+//         const target = e.target
+//         const isClick = target.classList.contains("clicked")
+//         const boardCellIndex = target.dataset.index
 
-        if (!isClick) {
-            selectCell(target, boardCellIndex)
-            changeTurn()
-            judge()
-        }
-        console.log("isGameOver : " + gameObject.isOvergame)
-        //これを置くことで、クリックしたらすぐにcpuが動くようになる
-        if (!gameObject.isOvergame) {
-            cpuMove()
-        }
-    })
-})
+//         if (!isClick) {
+//             selectCell(target, boardCellIndex)
+//             changeTurn()
+//             judge()
+//         }
+//         console.log("isGameOver : " + gameObject.isOvergame)
+//         //これを置くことで、クリックしたらすぐにcpuが動くようになる
+//         if (!gameObject.isOvergame) {
+//             cpuMove()
+//         }
+//     })
+// })
 
 //先行が人である場合にtrueを返す
 function mkplayOrDraw() {
@@ -483,16 +528,15 @@ function mkplayOrDraw() {
     } else return false
 }
 
-function cellsDisable(){
-    for(let i = 0; i < 9; i++){
-        document.getElementById(String(i)).classList.add("Disable");
+function cellsDisable() {
+    for (let i = 0; i < 9; i++) {
+        document.getElementById(String(i)).classList.add("Disable")
     }
-
 }
 
-function cellsAble(){
-    for(let i = 0; i < 9; i++){
-        document.getElementById(String(i)).classList.remove("Disable");
+function cellsAble() {
+    for (let i = 0; i < 9; i++) {
+        document.getElementById(String(i)).classList.remove("Disable")
     }
 }
 

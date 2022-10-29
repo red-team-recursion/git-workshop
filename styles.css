@@ -71,7 +71,7 @@ body {
 }
 
 /*選べない時にセル内の色を変えようとしたが、いまいち出来てないです*/
-.board-cell .Disable{
+.board-cell .Disable {
     opacity: 0.7;
     background-color: aquamarine;
 }
