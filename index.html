@@ -14,25 +14,31 @@
     <title>Tic Tac Toe</title>
   </head>
   <body>
+    <div id = "mode-select" class = "mode-select visible">
+      <div class="select-text">モードを選択してね🥺</div>
+      <button id = "no-cpu" class="no-cpu">二人で遊ぶ</button>
+      <button id = "cpu-week" class="cpu-week">CPUと対戦（弱い）</button>
+      <button id = "cpu-strog" class="cpu-strong">CPUと対戦（強い）</button>
+    </div>
     <div class="container">
       <div id="info">
         <!-- どっちのターン？かを描画する -->
         <h3 id="player-turn"></h3>
       </div>
       <div id="board" class="board">
-        <div class="board-cell" data-index="0"></div>
-        <div class="board-cell" data-index="1"></div>
-        <div class="board-cell" data-index="2"></div>
-        <div class="board-cell" data-index="3"></div>
-        <div class="board-cell" data-index="4"></div>
-        <div class="board-cell" data-index="5"></div>
-        <div class="board-cell" data-index="6"></div>
-        <div class="board-cell" data-index="7"></div>
-        <div class="board-cell" data-index="8"></div>
+        <div id = "0" class="board-cell" data-index="0"></div>
+        <div id = "1" class="board-cell" data-index="1"></div>
+        <div id = "2" class="board-cell" data-index="2"></div>
+        <div id = "3" class="board-cell" data-index="3"></div>
+        <div id = "4" class="board-cell" data-index="4"></div>
+        <div id = "5" class="board-cell" data-index="5"></div>
+        <div id = "6" class="board-cell" data-index="6"></div>
+        <div id = "7" class="board-cell" data-index="7"></div>
+        <div id = "8" class="board-cell" data-index="8"></div>
       </div>
-      <div id="finish" class="finish">
-        <span id="finish-text" class="finish-text"></span>
-        <button class="restart">Restart</button>
+      <div id = "finish" class="finish">
+        <span id = "finish-text" class="finish-text"></span>
+        <button id = "restart" class="restart">Restart</button>
       </div>
       <!-- <div id="menu">
         <button id="continue">こんてぃにゅー</button>
@@ -40,4 +46,4 @@
     </div>
     <script type="text/javascript" src="main.js"></script>
   </body>
-</html>
+</html
