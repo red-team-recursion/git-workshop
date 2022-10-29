@@ -38,8 +38,8 @@ const gameObject = {
 //ゲームの初期化をする関数
 function startGame(gameMode){
     gameObject.turnCount = 0;
-    gameObject.oState = [];
-    gameObject.xState = [];
+    gameObject.oClickedState = [];
+    gameObject.xClickedState = [];
     gameObject.oTurn = true;
 
     document.querySelector('.finish').classList.remove('visible');
